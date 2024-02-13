@@ -1,0 +1,10 @@
+version: v1alpha1
+metadata:
+  name: bird
+  version: "$VERSION"
+  author: Eric Yanulis
+  description: |
+    The BIRD Internet Routing Daemon.
+  compatibility:
+    talos:
+      version: ">= v1.6.0"
