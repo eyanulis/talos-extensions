@@ -1,0 +1,39 @@
+name: bird
+variant: scratch
+shell: /toolchain/bin/bash
+dependencies:
+  - stage: base
+steps:
+  - sources:
+    - url: https://bird.network.cz/download/bird-{{ .BIRD_VERSION }}.tar.gz
+      destination: bird.tar.gz
+      sha256: b0b9f6f8566541b9be4af1f0cac675c5a3785601a55667a7ec3d7de29735a786
+      sha512: f6b0672df048cfb78d289030675799e6d19db49d8cc458778d36a4e7c10a15be161dd101d7b03cf017f0fa948206d6504b59139515cbb80acc5bb1fdaa4358b9
+    prepare:
+      - |
+        sed -i 's#$VERSION#{{ .VERSION }}#' /pkg/manifest.yaml
+
+      - |
+        tar -xzvf bird.tar.gz --strip-components=1
+    build:
+      - |
+        mkdir -p /rootfs/usr/local/lib/containers/bird/
+
+      - |
+        LDFLAGS="-static" ./configure --prefix=/rootfs/usr/local/lib/containers/bird --enable-client=no --with-protocols=bgp
+        make
+    install:
+
+      - |
+        make install
+
+      - |
+        # cleanup - we can't use birdcl in talos, and we don't need the example config
+        rm /rootfs/usr/local/lib/containers/bird/etc/bird.conf /rootfs/usr/local/lib/containers/bird/sbin/birdcl
+finalize:
+  - from: /rootfs
+    to: /rootfs
+  - from: /pkg/manifest.yaml
+    to: /
+  - from: /pkg/bird.yaml
+    to: /rootfs/usr/local/etc/containers/
