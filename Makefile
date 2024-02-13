@@ -58,6 +58,7 @@ PKGS_PREFIX ?= ghcr.io/siderolabs
 TARGETS = amdgpu
 TARGETS += amd-ucode
 TARGETS += binfmt-misc
+TARGETS += bird
 TARGETS += bnx2-bnx2x
 TARGETS += btrfs
 TARGETS += chelsio-drivers
