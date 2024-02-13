@@ -1,0 +1,30 @@
+name: bird
+depends:
+  - service: cri
+  - network:
+    - addresses
+  - path: /var/etc/bird/bird.conf
+container:
+  entrypoint: /sbin/bird
+  args:
+    - -f
+    - -c
+    - /etc/bird.conf
+    - -s
+    - /var/run/bird/bird.ctl
+  mounts:
+    # bird control socket
+    - source: /var/run/bird
+      destination: /var/run/bird
+      type: bind
+      options:
+        - bind
+        - rw
+    # bird config
+    - source: /var/etc/bird/bird.conf
+      destination: /etc/bird.conf
+      type: bind
+      options:
+        - bind
+        - ro
+restart: always
