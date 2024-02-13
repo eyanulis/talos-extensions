@@ -52,6 +52,7 @@ COMMON_ARGS += --build-arg=PKGS="$(PKGS)"
 TARGETS = amdgpu-firmware
 TARGETS += amd-ucode
 TARGETS += binfmt-misc
+TARGETS += bird
 TARGETS += bnx2-bnx2x
 TARGETS += btrfs
 TARGETS += chelsio-drivers
