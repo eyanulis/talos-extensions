@@ -15,4 +15,4 @@ vars:
   ZLIB_VERSION: 1.2.13
 
 labels:
-  org.opencontainers.image.source: https://github.com/siderolabs/extensions
+  org.opencontainers.image.source: https://github.com/eyanulis/talos-extensions
