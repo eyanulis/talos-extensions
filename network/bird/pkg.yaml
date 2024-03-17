@@ -20,7 +20,7 @@ steps:
         mkdir -p /rootfs/usr/local/lib/containers/bird/
 
       - |
-        LDFLAGS="-static" ./configure --prefix=/rootfs/usr/local/lib/containers/bird --enable-client=no --with-protocols=bgp
+        LDFLAGS="-static" ./configure --prefix=/rootfs/usr/local/lib/containers/bird --enable-client=no
         make
     install:
 
