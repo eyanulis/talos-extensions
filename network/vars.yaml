@@ -4,4 +4,4 @@ TAILSCALE_VERSION: 1.78.1
 LLDPD_VERSION: 1.0.18
 # renovate: datasource=github-releases depName=cloudflare/cloudflared
 CLOUDFLARED_VERSION: 2024.12.1
-BIRD_VERSION: 2.14
+BIRD_VERSION: 2.15
