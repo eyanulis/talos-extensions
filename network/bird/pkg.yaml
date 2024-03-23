@@ -7,8 +7,8 @@ steps:
   - sources:
     - url: https://bird.network.cz/download/bird-{{ .BIRD_VERSION }}.tar.gz
       destination: bird.tar.gz
-      sha256: 7a6458fa41109c005531b23e3f7abd63d7000a99d195db4944ebccb539ed02f0
-      sha512: 320d506bb0d19ce7826db1d4b15cac1763748b649835304f199aa22746cddd602a01f2c08b5affad7d23ccf0599de4d7af6e2e24e2a542298b9d2b8435fb5303
+      sha256: 48e85c622de164756c132ea77ad1a8a95cc9fd0137ffd0d882746589ce75c75d
+      sha512: 75828ae7c3e574097ba6d7e38dd275ada3b078e215454478f2ed9898f7f8447b149e9ba4f47de05a2b8f4e4959b5ee8d46bee0ef58c79b9cb908a44e12df2842
     prepare:
       - |
         sed -i 's#$VERSION#{{ .VERSION }}#' /pkg/manifest.yaml
