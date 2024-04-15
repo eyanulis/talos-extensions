@@ -9,8 +9,8 @@ steps:
   - sources:
       - url: https://github.com/tailscale/tailscale/archive/refs/tags/v{{ .TAILSCALE_VERSION }}.tar.gz
         destination: tailscale.tar.gz
-        sha256: 19d91f208a7337b8f2caad030936112c641533d7c1d932a2a8732731e2e80ae5
-        sha512: 187cadb3eb0db54b8b4a6ae78d77745750167ead7fd6e68bc95171ea6058386e91696a3e36fdd8101f8a52fe0a2d9344484b4bca0a48929f19b2d314bb182e1c
+        sha256: a0b9b84fef37316a9eee2490668811cafb85b227839eca97bbff88f7ce58a815
+        sha512: 7aaca9241a24a87da12fc9f5a09656dc0832313715c791f779cb9304d794977570d70fdf79558d04c009641dfb97e0d5cea2114e5b9f96689cef28e9fd5df65c
     prepare:
       - |
         sed -i 's#$VERSION#{{ .VERSION }}#' /pkg/manifest.yaml
