@@ -15,25 +15,33 @@ steps:
 
       - |
         tar -xzvf bird.tar.gz --strip-components=1
+
+      - |
+        LDFLAGS="-static" ./configure \
+                                  --prefix=/rootfs/usr/local/lib/containers/bird \
+                                  --enable-client=no
     build:
       - |
-        mkdir -p /rootfs/usr/local/lib/containers/bird/
-
-      - |
-        LDFLAGS="-static" ./configure --prefix=/rootfs/usr/local/lib/containers/bird --enable-client=no
-        make
+        make -j $(nproc)
     install:
-
       - |
+        mkdir -p /rootfs/usr/local/{etc/containers,lib/containers/bird}
+
+        cp /pkg/bird.yaml /rootfs/usr/local/etc/containers/bird.yaml
+
         make install
 
       - |
         # cleanup - we can't use birdcl in talos, and we don't need the example config
         rm /rootfs/usr/local/lib/containers/bird/etc/bird.conf /rootfs/usr/local/lib/containers/bird/sbin/birdcl
+    test:
+      - |
+        mkdir -p /extensions-validator-rootfs
+        cp -r /rootfs/ /extensions-validator-rootfs/rootfs
+        cp /pkg/manifest.yaml /extensions-validator-rootfs/manifest.yaml
+        /extensions-validator validate --rootfs=/extensions-validator-rootfs --pkg-name="${PKG_NAME}"
 finalize:
   - from: /rootfs
     to: /rootfs
   - from: /pkg/manifest.yaml
     to: /
-  - from: /pkg/bird.yaml
-    to: /rootfs/usr/local/etc/containers/
