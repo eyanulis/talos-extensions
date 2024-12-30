@@ -22,7 +22,8 @@ steps:
                                   --enable-client=no
     build:
       - |
-        make -j $(nproc)
+        # N.B. DO NOT use `make -j $(nproc)` or similar here, it segfaults gcc(???) during the emulated arm64 build
+        make
     install:
       - |
         mkdir -p /rootfs/usr/local/{etc/containers,lib/containers/bird}
