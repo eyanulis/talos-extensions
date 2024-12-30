@@ -3,7 +3,7 @@ depends:
   - service: cri
   - network:
     - addresses
-  - path: /var/etc/bird/bird.conf
+  - configuration: true
 container:
   entrypoint: /sbin/bird
   args:
@@ -13,18 +13,13 @@ container:
     - -s
     - /var/run/bird/bird.ctl
   mounts:
-    # bird control socket
+    # mount bird control socket to host
+    # so birdc can be used from a node debug pod
     - source: /var/run/bird
       destination: /var/run/bird
       type: bind
       options:
         - bind
         - rw
-    # bird config
-    - source: /var/etc/bird/bird.conf
-      destination: /etc/bird.conf
-      type: bind
-      options:
-        - bind
-        - ro
 restart: always
+logToConsole: true
