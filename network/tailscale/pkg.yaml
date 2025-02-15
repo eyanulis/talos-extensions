@@ -1,30 +1,32 @@
 name: tailscale
 variant: scratch
-shell: /toolchain/bin/bash
+shell: /bin/bash
 dependencies:
   - stage: base
 steps:
   - env:
-      GOPATH: /go
+      GOPATH: /tmp/go
   - cachePaths:
       - /.cache/go-build
-      - /go/pkg
+      - /tmp/go/pkg
     sources:
       - url: https://github.com/tailscale/tailscale/archive/refs/tags/v{{ .TAILSCALE_VERSION }}.tar.gz
         destination: tailscale.tar.gz
         sha256: 3dc0e5f903912ba5ada04c807501550b2d434111d1080b11099672d3dfd5c3f3
         sha512: 17ba3a9866cb274b3cec197f676f2062eb8c662fbc2e0ec51da12e0123446eb3fdf8c871ae6ae9f99e46e54b95512b20be5bffccfb934742b574571c87d002d3
+  - network: default
     prepare:
       - |
         sed -i 's#$VERSION#{{ .VERSION }}#' /pkg/manifest.yaml
-
       - |
         mkdir tailscale dist
         tar -xzvf tailscale.tar.gz --strip-components=1 -C tailscale
+      - |
+        cd tailscale
+        go mod download
+  - network: none
     build:
       - |
-        export PATH=${PATH}:${TOOLCHAIN}/go/bin
-
         go build \
           -C tailscale \
           -o ../dist \
