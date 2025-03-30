@@ -12,8 +12,8 @@ steps:
     sources:
       - url: https://github.com/tailscale/tailscale/archive/refs/tags/v{{ .TAILSCALE_VERSION }}.tar.gz
         destination: tailscale.tar.gz
-        sha256: b4d5eb15e2d11ad71803dea8ec8ddcaf5a400eabe12a5f469d133cfeae56678b
-        sha512: feb9e61ffe6726c1b6e0529660e484edd4e40c5be2fa841682f8522ba1594886a5c12ca88754a048ae9b9cf04fc0c877406f1fb804a99151fa853eaba4ba8339
+        sha256: {{ .TAILSCALE_SHA256 }}
+        sha512: {{ .TAILSCALE_SHA512 }}
   - network: default
     prepare:
       - |

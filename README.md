@@ -64,10 +64,11 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 
 ### Direct Rendering Manager (DRM)
 
-| Name                  | Image                                                                                       | Description                    | Version Format                           |
-| --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------ | ---------------------------------------- |
-| [amdgpu](drm/amdgpu/) | [ghcr.io/siderolabs/amdgpu](https://github.com/siderolabs/extensions/pkgs/container/amdgpu) | AMD GPU firmware and drivers   | `linux firmware version`-`talos version` |
-| [i915](drm/i915/)     | [ghcr.io/siderolabs/i915](https://github.com/siderolabs/extensions/pkgs/container/i915)     | Intel GPU firmware and drivers | `linux firmware version`-`talos version` |
+| Name                     | Image                                                                                           | Description                       | Version Format                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------- |
+| [amdgpu](drm/amdgpu/)    | [ghcr.io/siderolabs/amdgpu](https://github.com/siderolabs/extensions/pkgs/container/amdgpu)     | AMD GPU firmware and drivers      | `linux firmware version`-`talos version` |
+| [i915](drm/i915/)        | [ghcr.io/siderolabs/i915](https://github.com/siderolabs/extensions/pkgs/container/i915)         | Intel GPU firmware and drivers    | `linux firmware version`-`talos version` |
+| [panfrost](drm/panfrost) | [ghcr.io/siderolabs/panfrost](https://github.com/siderolabs/extensions/pkgs/container/panfrost) | Panfrost GPU firmware and drivers | `linux firmware version`-`talos version` |
 
 ### Drivers
 
@@ -83,6 +84,7 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 | [v4l-uvc](drivers/v4l-uvc/)          | [ghcr.io/siderolabs/v4l-uvc-drivers](https://github.com/siderolabs/extensions/pkgs/container/v4l-uvc-drivers)                               | USB Video Class (Webcam) drivers     | `talos version`                                       |
 
 ### Digital Video Broadcasting (DVB)
+
 | Name                            | Image                                                                                                 | Description                                                  | Version Format  |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | --------------- |
 | [dvb-cx23885](dvb/dvb-cx23885/) | [ghcr.io/siderolabs/dvb-cx23885](https://github.com/siderolabs/extensions/pkgs/container/dvb-cx23885) | DVB kernel modules + firmware for Hauppage WinTV-quadHD PCIe | `talos version` |
@@ -99,9 +101,10 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 | Name                                | Image                                                                                                 | Description                                               | Version Format     |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------ |
 | [cloudflared](network/cloudflared/) | [ghcr.io/siderolabs/cloudflared](https://github.com/siderolabs/extensions/pkgs/container/cloudflared) | [Cloudflared](https://github.com/cloudflare/cloudflared/) | `upstream version` |
+| [nebula](network/nebula/)           | [ghcr.io/siderolabs/nebula](https://github.com/siderolabs/extensions/pkgs/container/nebula)           | [Nebula](https://github.com/slackhq/nebula)               | `upstream version` |
 | [lldpd](network/lldpd/)             | [ghcr.io/siderolabs/lldpd](https://github.com/siderolabs/extensions/pkgs/container/lldpd)             | [LLDP](https://github.com/lldpd/lldpd)                    | `upstream version` |
 | [tailscale](network/tailscale/)     | [ghcr.io/siderolabs/tailscale](https://github.com/siderolabs/extensions/pkgs/container/tailscale)     | [Tailscale](https://tailscale.com)                        | `upstream version` |
-
+| [zerotier](network/zerotier/)       | [ghcr.io/siderolabs/zerotier](https://github.com/siderolabs/extensions/pkgs/container/zerotier)       | [ZeroTier](https://zerotier.com)                          | `upstream version` |
 
 ### Storage
 
@@ -111,8 +114,8 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 | [drbd](storage/drbd/)               | [ghcr.io/siderolabs/drbd](https://github.com/siderolabs/extensions/pkgs/container/drbd)               | DRBD driver module     | `upstream version`-`talos version` |
 | [iscsi-tools](storage/iscsi-tools/) | [ghcr.io/siderolabs/iscsi-tools](https://github.com/siderolabs/extensions/pkgs/container/iscsi-tools) | Open iSCSI tools       | `v0.1.0`                           |
 | [mdadm](storage/mdadm/)             | [ghcr.io/siderolabs/mdadm](https://github.com/siderolabs/extensions/pkgs/container/mdadm)             | manage MD devices tool | `upstream version`                 |
+| [nfsd](storage/nfsd/)               | [ghcr.io/siderolabs/nfsd](https://github.com/siderolabs/extensions/pkgs/container/nfsd)               | nfsd kernel module     | `talos version`                    |
 | [zfs](storage/zfs/)                 | [ghcr.io/siderolabs/zfs](https://github.com/siderolabs/extensions/pkgs/container/zfs)                 | ZFS driver module      | `upstream version`-`talos version` |
-
 
 ### Power
 
@@ -127,7 +130,7 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 | [metal-agent](guest-agents/metal-agent/)                   | [ghcr.io/siderolabs/metal-agent](https://github.com/siderolabs/extensions/pkgs/container/metal-agent)                   | [Talos Metal Agent](https://github.com/siderolabs/talos-metal-agent)   | `upstream version` |
 | [qemu-guest-agent](guest-agents/qemu-guest-agent/)         | [ghcr.io/siderolabs/qemu-guest-agent](https://github.com/siderolabs/extensions/pkgs/container/qemu-guest-agent)         | [QEMU Guest Agent](https://wiki.qemu.org/Features/GuestAgent)          | `upstream version` |
 | [vmtoolsd-guest-agent](guest-agents/vmtoolsd-guest-agent/) | [ghcr.io/siderolabs/vmtoolsd-guest-agent](https://github.com/siderolabs/extensions/pkgs/container/vmtoolsd-guest-agent) | [talos-vmtoolsd](https://github.com/siderolabs/talos-vmtoolsd)         | `upstream version` |
-| [xe-guest-utilities](guest-agents/xe-guest-utilities/)     | [ghcr.io/siderolabs/xe-guest-utilities](https://github.com/siderolabs/extensions/pkgs/container/xe-guest-utilities)     | [xe-guest-utilities](https://github.com/xenserver/xe-guest-utilitiest) | `upstream version` |
+| [xen-guest-agent](guest-agents/xen-guest-agent/)     | [ghcr.io/siderolabs/xen-guest-agent](https://github.com/siderolabs/extensions/pkgs/container/xen-guest-agent)     | [xe-guest-utilities](https://github.com/xenserver/xe-guest-utilitiest) | `upstream version` |
 
 ### NVIDIA GPU
 
@@ -143,6 +146,7 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 | ------------------------------------- | ----------------------------------------- | ------------------ |
 | [util-linux-tools](tools/util-linux/) | Util Linux tools (`fstrim` and `nsenter`) | `upstream version` |
 | [nvme-cli](tools/nvme-cli/)           | NVMe command line interface               | `upstream version` |
+| [ctr](tools/ctr/)                     | `ctr` command line tool                   | `upstream version` |
 
 ## Building Extensions
 

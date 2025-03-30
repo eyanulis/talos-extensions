@@ -1,6 +1,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED, PLEASE DO NOT EDIT.
 #
-# Generated on 2025-02-14T14:44:17Z by kres 8a48729.
+# Generated on 2025-03-26T20:28:56Z by kres d903dae.
 
 # common variables
 
@@ -44,12 +44,16 @@ COMMON_ARGS += --build-arg=SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH)
 COMMON_ARGS += --build-arg=TAG="$(TAG)"
 COMMON_ARGS += --build-arg=PKGS="$(PKGS)"
 COMMON_ARGS += --build-arg=PKGS_PREFIX="$(PKGS_PREFIX)"
+COMMON_ARGS += --build-arg=TOOLS="$(TOOLS)"
+COMMON_ARGS += --build-arg=TOOLS_PREFIX="$(TOOLS_PREFIX)"
 
 # extra variables
 
 EXTENSIONS_IMAGE_REF ?= $(REGISTRY_AND_USERNAME)/extensions:$(TAG)
-PKGS ?= v1.10.0-alpha.0-37-g359807b
+PKGS ?= v1.10.0-alpha.0-69-g665f782
 PKGS_PREFIX ?= ghcr.io/siderolabs
+TOOLS ?= v1.10.0-alpha.0-23-g6d456ca
+TOOLS_PREFIX ?= ghcr.io/siderolabs
 
 # targets defines all the available targets
 
@@ -63,6 +67,7 @@ TARGETS += chelsio-drivers
 TARGETS += chelsio-firmware
 TARGETS += cloudflared
 TARGETS += crun
+TARGETS += ctr
 TARGETS += drbd
 TARGETS += dvb-cx23885
 TARGETS += ecr-credential-provider
@@ -81,6 +86,8 @@ TARGETS += lldpd
 TARGETS += mdadm
 TARGETS += mei
 TARGETS += metal-agent
+TARGETS += nebula
+TARGETS += nfsd
 TARGETS += nut-client
 TARGETS += nvidia-container-toolkit-lts
 TARGETS += nvidia-container-toolkit-production
@@ -89,9 +96,11 @@ TARGETS += nvidia-fabricmanager-production
 TARGETS += nvidia-open-gpu-kernel-modules-lts
 TARGETS += nvidia-open-gpu-kernel-modules-production
 TARGETS += nvme-cli
+TARGETS += panfrost
 TARGETS += qemu-guest-agent
 TARGETS += qlogic-firmware
 TARGETS += realtek-firmware
+TARGETS += revpi-firmware
 TARGETS += spin
 TARGETS += stargz-snapshotter
 TARGETS += tailscale
@@ -103,6 +112,7 @@ TARGETS += v4l-uvc-drivers
 TARGETS += vmtoolsd-guest-agent
 TARGETS += wasmedge
 TARGETS += xen-guest-agent
+TARGETS += zerotier
 TARGETS += zfs
 NONFREE_TARGETS = nonfree-kmod-nvidia-lts
 NONFREE_TARGETS += nonfree-kmod-nvidia-production

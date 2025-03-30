@@ -36,6 +36,7 @@ If the field is marked as `Needs Maintainer`, it means that the package is curre
 | mdadm                                     | Serge Logvinov     | [sergelogvinov](https://github.com/sergelogvinov)                    |
 | mei                                       | Nick Meyer         | [e3b0c442](https://github.com/e3b0c442)                              |
 | metal-agent                               | Sidero Labs        | NA                                                                   |
+| nebula                                    | s e                | [iamwacko](https://github.com/iamwacko)                              |
 | nut-client                                | Sidero Labs        | NA                                                                   |
 | nvidia-container-toolkit-lts              | Sidero Labs        | NA                                                                   |
 | nivida-container-toolkit-production       | Sidero Labs        | NA                                                                   |
@@ -46,9 +47,11 @@ If the field is marked as `Needs Maintainer`, it means that the package is curre
 | nvme-cli                                  | Sidelo Labs        | NA                                                                   |
 | nonfree-kmod-nvidia-lts                   | Sidero Labs        | NA                                                                   |
 | nonfree-kmod-nvidia-production            | Sidero Labs        | NA                                                                   |
+| panfrost                                  | Adam Cirillo       | [adamcirillo](https://github.com/adamcirillo)                        |
 | qemu-guest-agent                          | Markus Reiter      | [reitermarkus](https://github.com/reitermarkus)                      |
 | qlogic-firmware                           | Sidero Labs        | NA                                                                   |
 | realtek-firmware                          | Sidero Labs        | NA                                                                   |
+| revpi-firmware                            | Martin Schuessler  | [c0ffee](https://github.com/c0ffee)                                  |
 | spin                                      | Sven Pfennig       | [0xE282B0](https://github.com/0xE282B0)                              |
 | stargz-snapshotter                        | Sidero Labs        | NA                                                                   |
 | tailscale                                 | Beau Trepp         | [btrepp](https://github.com/btrepp)                                  |
@@ -60,4 +63,5 @@ If the field is marked as `Needs Maintainer`, it means that the package is curre
 | vmtoolsd-guest-agent                      | Robin Elfrink      | [robinelfrink](https://github.com/robinelfrink)                      |
 | wasmedge                                  | Sidero Labs        | NA                                                                   |
 | xen-guest-agent                           | Jerwin NJ          | [j3rwin](https://github.com/j3rwin)                                  |
+| zerotier                                  | rob-htl            | [rob-htl](https://github.com/rob-htl)                                |
 | zfs                                       | Aenix, Enix        | [kvaps](https://github.com/kvaps), [donch](https://github.com/donch) |
