@@ -69,11 +69,13 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 | [amdgpu](drm/amdgpu/)    | [ghcr.io/siderolabs/amdgpu](https://github.com/siderolabs/extensions/pkgs/container/amdgpu)     | AMD GPU firmware and drivers      | `linux firmware version`-`talos version` |
 | [i915](drm/i915/)        | [ghcr.io/siderolabs/i915](https://github.com/siderolabs/extensions/pkgs/container/i915)         | Intel GPU firmware and drivers    | `linux firmware version`-`talos version` |
 | [panfrost](drm/panfrost) | [ghcr.io/siderolabs/panfrost](https://github.com/siderolabs/extensions/pkgs/container/panfrost) | Panfrost GPU firmware and drivers | `linux firmware version`-`talos version` |
+| [vc4](drm/vc4) | [ghcr.io/siderolabs/vc4](https://github.com/siderolabs/extensions/pkgs/container/vc4) | Broadcom VideoCore GPU drivers | `talos version` |
 
 ### Drivers
 
 | Name                                 | Image                                                                                                                                       | Description                          | Version Format                                        |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ----------------------------------------------------- |
+| [amazon-ena](drivers/amazon-ena/)    | [ghcr.io/siderolabs/amazon-ena](https://github.com/siderolabs/extensions/pkgs/container/amazon-ena)                                         | Amazon ENA driver                    | `upstream-talos version`                                       |
 | [chelsio](drivers/chelsio/)          | [ghcr.io/siderolabs/chelsio-drivers](https://github.com/siderolabs/extensions/pkgs/container/chelsio-drivers)                               | Chelsio NIC drivers                  | `talos version`                                       |
 | [gasket](drivers/gasket/)            | [ghcr.io/siderolabs/gasket-driver](https://github.com/siderolabs/extensions/pkgs/container/gasket-driver)                                   | Driver for Google Coral PCIe devices | `gasket driver upstream short commit`-`talos version` |
 | [mei](drivers/mei/)                  | [ghcr.io/siderolabs/mei](https://github.com/siderolabs/extensions/pkgs/container/mei)                                                       | Driver for Intel Management Engine   | `talos version`                                       |
@@ -82,6 +84,7 @@ cosign verify --certificate-identity-regexp '@siderolabs\.com$' --certificate-oi
 | [uinput](drivers/uinput/)            | [ghcr.io/siderolabs/uinput](https://github.com/siderolabs/extensions/pkgs/container/uinput)                                                 | uinput drivers                       | `talos version`                                       |
 | [usb-modem](drivers/usb-modem/)      | [ghcr.io/siderolabs/usb-modem-drivers](https://github.com/siderolabs/extensions/pkgs/container/usb-modem-drivers)                           | USB Modem drivers                    | `talos version`                                       |
 | [v4l-uvc](drivers/v4l-uvc/)          | [ghcr.io/siderolabs/v4l-uvc-drivers](https://github.com/siderolabs/extensions/pkgs/container/v4l-uvc-drivers)                               | USB Video Class (Webcam) drivers     | `talos version`                                       |
+| [xdma-driver](drivers/xdma-driver/)  | [ghcr.io/siderolabs/xdma-driver](https://github.com/siderolabs/extensions/pkgs/container/xdma-driver)                                       | Xilinx PCIe DMA                      | `upstream-talos version`                                       |
 
 ### Digital Video Broadcasting (DVB)
 
