@@ -15,12 +15,14 @@ spec:
     - ctr
     - drbd
     - dvb-cx23885
+    - dvb-m88ds3103
     - ecr-credential-provider
     - fuse3
     - gasket-driver
     - glibc
     - gvisor
     - gvisor-debug
+    - hailort
     - hello-world-service
     - i915
     - intel-ice-firmware
@@ -32,7 +34,9 @@ spec:
     - mei
     - metal-agent
     - nebula
+    - newt
     - nfsd
+    - nfsrahead
     - nut-client
     - nvidia-container-toolkit-lts
     - nvidia-container-toolkit-production
@@ -49,6 +53,7 @@ spec:
     - spin
     - stargz-snapshotter
     - tailscale
+    - tenstorrent
     - thunderbolt
     - uinput
     - usb-modem-drivers
@@ -78,11 +83,11 @@ spec:
       - name: EXTENSIONS_IMAGE_REF
         defaultValue: $(REGISTRY_AND_USERNAME)/extensions:$(TAG)
       - name: PKGS
-        defaultValue: v1.11.0-alpha.0-13-g1567cb6
+        defaultValue: v1.12.0-alpha.0-4-gd5f7467
       - name: PKGS_PREFIX
         defaultValue: ghcr.io/siderolabs
       - name: TOOLS
-        defaultValue: v1.11.0-alpha.0-1-ge35234b
+        defaultValue: v1.12.0-alpha.0
       - name: TOOLS_PREFIX
         defaultValue: ghcr.io/siderolabs
   useBldrPkgTagResolver: true
@@ -108,7 +113,7 @@ spec:
       toplevel: true
     - name: sign-images
       toplevel: true
-    - name: extensions-info
+    - name: grype-scan
       toplevel: true
 ---
 kind: custom.Step
@@ -184,6 +189,39 @@ spec:
           cosign verify $$image --certificate-identity-regexp '@siderolabs\.com$$' --certificate-oidc-issuer https://accounts.google.com || \
             cosign sign --yes $$image; \
         done
+---
+kind: custom.Step
+name: grype-scan
+spec:
+  makefile:
+    enabled: true
+    phony: true
+    script:
+      - "@$(MAKE) local-$@ DEST=$(ARTIFACTS)/grype-scan"
+      # - "@$(MAKE) target-$@ TARGET_ARGS=\"--build-arg=GRYPE_EXTRA_ARGS='--fail-on=negligible'\""
+  ghaction:
+    enabled: true
+    cronOnly: true
+    jobs:
+      - name: grype-scan
+        runnerLabels:
+          - pkgs
+        triggerLabels:
+        - integration/grype
+        crons:
+          - '30 7 * * *'
+        artifacts:
+          enabled: true
+          skipArtifactDownload: true
+          additional:
+            - name: results
+              paths:
+                - _out/grype-scan/linux_amd64/combined.spdx.json
+                - _out/grype-scan/linux_amd64/grype-scan.log
+                - _out/grype-scan/linux_arm64/combined.spdx.json
+                - _out/grype-scan/linux_arm64/grype-scan.log
+              retentionDays: "180"
+              always: true
 ---
 kind: common.Renovate
 spec:

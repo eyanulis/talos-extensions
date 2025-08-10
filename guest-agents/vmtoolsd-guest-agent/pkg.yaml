@@ -1,32 +1,20 @@
 name: vmtoolsd-guest-agent
 variant: scratch
 shell: /bin/bash
-# {{ if eq .ARCH "aarch64" }} This in fact is YAML comment, but Go templating instruction is evaluated by bldr
-# VMWare doesn't support arm64
 dependencies:
   - stage: base
-steps:
-  - prepare:
-      - |
-        sed -i 's#$VERSION#{{ .VERSION }}#' /pkg/stub-manifest.yaml
-      - |
-        mkdir /rootfs
-finalize:
-  - from: /pkg/stub-manifest.yaml
-    to: /manifest.yaml
-  - from: /rootfs
-    to: /rootfs
-# {{ else }} This in fact is YAML comment, but Go templating instruction is evaluated by bldr
-dependencies:
-  - stage: base
-  - image: {{ .BUILD_ARG_PKGS_PREFIX }}/talos-vmtoolsd:{{ .TALOS_VMTOOLSD_VERSION }}
+  - image: "{{ .BUILD_ARG_PKGS_PREFIX }}/talos-vmtoolsd:{{ .TALOS_VMTOOLSD_VERSION }}"
     from: /
     to: /rootfs
 steps:
   - test:
       - |
         /extensions-validator validate --rootfs=/rootfs --pkg-name="${PKG_NAME}"
+    sbom:
+      outputPath: /rootfs/usr/local/share/spdx/vmtoolsd-guest-agent.spdx.json
+      version: {{ .TALOS_VMTOOLSD_VERSION }}
+      licenses:
+        - Apache-2.0
 finalize:
   - from: /rootfs
     to: /
-# {{ end }} This in fact is YAML comment, but Go templating instruction is evaluated by bldr

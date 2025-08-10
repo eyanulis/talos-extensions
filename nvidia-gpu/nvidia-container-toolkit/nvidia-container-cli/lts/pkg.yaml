@@ -3,6 +3,7 @@ variant: scratch
 shell: /bin/bash
 install:
   - build-base
+  - gcc-14
   - bash
   - go
   - coreutils
@@ -33,6 +34,8 @@ steps:
         sha256: {{ .LIBNVIDIA_CONTAINER_SHA256 }}
         sha512: {{ .LIBNVIDIA_CONTAINER_SHA512 }}
     env:
+      CC: gcc-14
+      CXX: g++-14
       SOURCE_DATE_EPOCH: {{ .BUILD_ARG_SOURCE_DATE_EPOCH }}
       REVISION: {{ .LIBNVIDIA_CONTAINER_REF }}
       LIB_VERSION: {{ .LIBNVIDIA_CONTAINER_VERSION | replace "v" "" }}
@@ -65,6 +68,13 @@ steps:
 
         # run ldconfig to update the cache
         /rootfs/usr/local/glibc/sbin/ldconfig -r /rootfs
+    sbom:
+      outputPath: /rootfs/usr/local/share/spdx/nvidia-container-cli.spdx.json
+      version: {{ .LIBNVIDIA_CONTAINER_VERSION }}
+      licenses:
+        - Apache-2.0
+        - GPL-3.0
+        - LGPL-3.0
 finalize:
   - from: /rootfs
     to: /rootfs

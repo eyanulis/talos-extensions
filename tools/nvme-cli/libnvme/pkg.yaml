@@ -16,10 +16,13 @@ steps:
 
         export PKG_CONFIG_PATH=/usr/lib/pkgconfig
 
+        patch -p1 < /pkg/patches/rm-internal-include.patch
+
         meson setup \
           -Db_lto=true \
           -Djson-c=enabled \
           -Dpython=disabled \
+          -Dsysconfdir=/etc \
           .build
     build:
       - |
@@ -27,6 +30,11 @@ steps:
     install:
       - |
         DESTDIR=/rootfs meson install -C .build
+    sbom:
+      outputPath: /rootfs/usr/local/share/spdx/libnvme.spdx.json
+      version: {{ .LIBNVME_VERSION }}
+      licenses:
+        - LGPL-2.1
 finalize:
   - from: /rootfs
     to: /rootfs

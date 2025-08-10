@@ -1,6 +1,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED, PLEASE DO NOT EDIT.
 #
-# Generated on 2025-05-16T09:04:38Z by kres 5ad3e5f.
+# Generated on 2025-08-07T15:53:10Z by kres 7f1d58a.
 
 # common variables
 
@@ -25,7 +25,7 @@ SOURCE_DATE_EPOCH := $(shell git log $(INITIAL_COMMIT_SHA) --pretty=%ct)
 
 # sync bldr image with pkgfile
 
-BLDR_RELEASE := v0.4.1
+BLDR_RELEASE := v0.5.1
 BLDR_IMAGE := ghcr.io/siderolabs/bldr:$(BLDR_RELEASE)
 BLDR := docker run --rm --user $(shell id -u):$(shell id -g) --volume $(PWD):/src --entrypoint=/bldr $(BLDR_IMAGE) --root=/src
 
@@ -50,9 +50,9 @@ COMMON_ARGS += --build-arg=TOOLS_PREFIX="$(TOOLS_PREFIX)"
 # extra variables
 
 EXTENSIONS_IMAGE_REF ?= $(REGISTRY_AND_USERNAME)/extensions:$(TAG)
-PKGS ?= v1.11.0-alpha.0-13-g1567cb6
+PKGS ?= v1.12.0-alpha.0-4-gd5f7467
 PKGS_PREFIX ?= ghcr.io/siderolabs
-TOOLS ?= v1.11.0-alpha.0-1-ge35234b
+TOOLS ?= v1.12.0-alpha.0
 TOOLS_PREFIX ?= ghcr.io/siderolabs
 
 # targets defines all the available targets
@@ -71,12 +71,14 @@ TARGETS += crun
 TARGETS += ctr
 TARGETS += drbd
 TARGETS += dvb-cx23885
+TARGETS += dvb-m88ds3103
 TARGETS += ecr-credential-provider
 TARGETS += fuse3
 TARGETS += gasket-driver
 TARGETS += glibc
 TARGETS += gvisor
 TARGETS += gvisor-debug
+TARGETS += hailort
 TARGETS += hello-world-service
 TARGETS += i915
 TARGETS += intel-ice-firmware
@@ -88,7 +90,9 @@ TARGETS += mdadm
 TARGETS += mei
 TARGETS += metal-agent
 TARGETS += nebula
+TARGETS += newt
 TARGETS += nfsd
+TARGETS += nfsrahead
 TARGETS += nut-client
 TARGETS += nvidia-container-toolkit-lts
 TARGETS += nvidia-container-toolkit-production
@@ -105,6 +109,7 @@ TARGETS += revpi-firmware
 TARGETS += spin
 TARGETS += stargz-snapshotter
 TARGETS += tailscale
+TARGETS += tenstorrent
 TARGETS += thunderbolt
 TARGETS += uinput
 TARGETS += usb-modem-drivers
@@ -244,6 +249,10 @@ sign-images:
 	  cosign verify $$image --certificate-identity-regexp '@siderolabs\.com$$' --certificate-oidc-issuer https://accounts.google.com || \
 	    cosign sign --yes $$image; \
 	done
+
+.PHONY: grype-scan
+grype-scan:
+	@$(MAKE) local-$@ DEST=$(ARTIFACTS)/grype-scan
 
 .PHONY: rekres
 rekres:
