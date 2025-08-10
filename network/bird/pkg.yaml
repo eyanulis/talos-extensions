@@ -5,7 +5,7 @@ dependencies:
   - stage: base
 steps:
   - sources:
-    - url: https://bird.network.cz/download/bird-{{ .BIRD_VERSION }}.tar.gz
+    - url: https://bird.nic.cz/download/bird-{{ .BIRD_VERSION }}.tar.gz
       destination: bird.tar.gz
       sha256: {{ .BIRD_SHA256 }}
       sha512: {{ .BIRD_SHA512 }}
