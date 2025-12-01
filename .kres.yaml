@@ -33,8 +33,11 @@ spec:
     - mdadm
     - mei
     - metal-agent
+    - multipath-tools
     - nebula
+    - netbird
     - newt
+    - nfs-utils
     - nfsd
     - nfsrahead
     - nut-client
@@ -42,9 +45,11 @@ spec:
     - nvidia-container-toolkit-production
     - nvidia-fabricmanager-lts
     - nvidia-fabricmanager-production
+    - nvidia-gdrdrv-device
     - nvidia-open-gpu-kernel-modules-lts
     - nvidia-open-gpu-kernel-modules-production
     - nvme-cli
+    - soci-snapshotter
     - panfrost
     - qemu-guest-agent
     - qlogic-firmware
@@ -55,14 +60,17 @@ spec:
     - tailscale
     - tenstorrent
     - thunderbolt
+    - trident-iscsi-tools
     - uinput
     - usb-modem-drivers
+    - usb-audio-drivers
     - util-linux-tools
     - v4l-uvc-drivers
     - vc4
     - vmtoolsd-guest-agent
     - wasmedge
     - xdma-driver
+    - xe
     - xen-guest-agent
     - youki
     - zerotier
@@ -83,11 +91,11 @@ spec:
       - name: EXTENSIONS_IMAGE_REF
         defaultValue: $(REGISTRY_AND_USERNAME)/extensions:$(TAG)
       - name: PKGS
-        defaultValue: v1.12.0-alpha.0-4-gd5f7467
+        defaultValue: v1.13.0-alpha.0-1-g4a31ff7
       - name: PKGS_PREFIX
         defaultValue: ghcr.io/siderolabs
       - name: TOOLS
-        defaultValue: v1.12.0-alpha.0
+        defaultValue: v1.13.0-alpha.0
       - name: TOOLS_PREFIX
         defaultValue: ghcr.io/siderolabs
   useBldrPkgTagResolver: true
@@ -101,15 +109,19 @@ spec:
 kind: auto.CustomSteps
 spec:
   steps:
-    - name: check-dirty
-      toplevel: true
     - name: extensions
+      toplevel: true
+    - name: extensions-catalog
+      toplevel: true
+    - name: check-dirty
       toplevel: true
     - name: extensions-metadata
       toplevel: true
     - name: internal/extensions/image-digests
       toplevel: true
     - name: internal/extensions/descriptions.yaml
+      toplevel: true
+    - name: $(ARTIFACTS)/image-signer
       toplevel: true
     - name: sign-images
       toplevel: true
@@ -132,6 +144,35 @@ spec:
     condition: except-pull-request
     environment:
       PUSH: true
+---
+kind: custom.Step
+name: extensions-catalog
+spec:
+  makefile:
+    enabled: true
+    phony: true
+    depends:
+      - $(ARTIFACTS)/bldr
+    script:
+      - |
+        @$(ARTIFACTS)/bldr dump --build-arg TAG=VERSION --template hack/catalog.template > $(ARTIFACTS)/catalog.md 2>/dev/null
+        @lead='^<!-- ### BEGIN GENERATED CONTENT -->$$'; tail='^<!-- ### END GENERATED CONTENT -->$$'; sed -i -e "/$$lead/,/$$tail/{ /$$lead/{p; r $(ARTIFACTS)/catalog.md" -e "}; /$$tail/p; d }" README.md
+  ghaction:
+    enabled: true
+    condition: on-pull-request
+---
+kind: custom.Step
+name: check-dirty
+spec:
+  makefile:
+    enabled: true
+    phony: true
+    script:
+      - |
+        @if test -n "`git status --porcelain`"; then echo "Source tree is dirty"; git status; git diff; exit 1 ; fi
+  ghaction:
+    enabled: true
+    condition: on-pull-request
 ---
 kind: custom.Step
 name: extensions-metadata
@@ -177,18 +218,30 @@ spec:
         done
 ---
 kind: custom.Step
+name: $(ARTIFACTS)/image-signer
+spec:
+  makefile:
+    enabled: true
+    phony: true
+    variables:
+      - name: IMAGE_SIGNER_RELEASE
+        defaultValue: v0.1.1
+    script:
+      - |
+        @curl -sSL https://github.com/siderolabs/go-tools/releases/download/$(IMAGE_SIGNER_RELEASE)/image-signer-$(OPERATING_SYSTEM)-$(GOARCH) -o $(ARTIFACTS)/image-signer
+        @chmod +x $(ARTIFACTS)/image-signer
+---
+kind: custom.Step
 name: sign-images
 spec:
   makefile:
     enabled: true
     phony: true
+    depends:
+      - $(ARTIFACTS)/image-signer
     script:
       - |
-        @for image in $(shell crane export $(EXTENSIONS_IMAGE_REF) | tar x --to-stdout image-digests) $(EXTENSIONS_IMAGE_REF)@$$(crane digest $(EXTENSIONS_IMAGE_REF)); do \
-          echo '==>' $$image; \
-          cosign verify $$image --certificate-identity-regexp '@siderolabs\.com$$' --certificate-oidc-issuer https://accounts.google.com || \
-            cosign sign --yes $$image; \
-        done
+        @$(ARTIFACTS)/image-signer sign --timeout=15m $(shell crane export $(EXTENSIONS_IMAGE_REF) | tar x --to-stdout image-digests) $(EXTENSIONS_IMAGE_REF)@$$(crane digest $(EXTENSIONS_IMAGE_REF))
 ---
 kind: custom.Step
 name: grype-scan
@@ -197,15 +250,14 @@ spec:
     enabled: true
     phony: true
     script:
-      - "@$(MAKE) local-$@ DEST=$(ARTIFACTS)/grype-scan"
+      - "@$(MAKE) local-$@ DEST=$(ARTIFACTS)/grype-scan PLATFORM=linux/amd64"
       # - "@$(MAKE) target-$@ TARGET_ARGS=\"--build-arg=GRYPE_EXTRA_ARGS='--fail-on=negligible'\""
   ghaction:
     enabled: true
     cronOnly: true
     jobs:
       - name: grype-scan
-        runnerLabels:
-          - pkgs
+        runnerGroup: pkgs
         triggerLabels:
         - integration/grype
         crons:
@@ -216,10 +268,7 @@ spec:
           additional:
             - name: results
               paths:
-                - _out/grype-scan/linux_amd64/combined.spdx.json
-                - _out/grype-scan/linux_amd64/grype-scan.log
-                - _out/grype-scan/linux_arm64/combined.spdx.json
-                - _out/grype-scan/linux_arm64/grype-scan.log
+                - _out/grype-scan/**
               retentionDays: "180"
               always: true
 ---
@@ -235,6 +284,7 @@ spec:
         - git://git.kernel.org/pub/scm/utils/mdadm/mdadm.git
         - linux-nvme/libnvme
         - linux-nvme/nvme-cli
+        - cloudflare/cloudflared
       versioning: 'regex:^(?<major>\d+)\.(?<minor>\d+)\.?(?<patch>\d+)?$'
     - matchPackageNames:
         - https://sourceware.org/git/glibc.git
@@ -242,8 +292,10 @@ spec:
     - matchPackageNames:
         - google/gvisor
         - intel/Intel-Linux-Processor-Microcode-Data-Files
-        - cloudflare/cloudflared
       versioning: 'regex:^(?<major>\d{4})(?<minor>\d{2})(?<patch>\d{2})\.?(?<build>\d+)?$'
     - matchPackageNames:
         - git://linux-nfs.org/~steved/libtirpc
       versioning: 'regex:^(?<major>\d+)-(?<minor>\d+)-?(?<patch>\d+)?$'
+    - matchPackageNames:
+        - systemd/systemd
+      versioning: 'regex:^(?<major>\d+)\.?(?<minor>\d+)?\.?(?<patch>\d+)?$'

@@ -75,7 +75,8 @@
                 "git://sourceware.org/git/elfutils.git",
                 "git://git.kernel.org/pub/scm/utils/mdadm/mdadm.git",
                 "linux-nvme/libnvme",
-                "linux-nvme/nvme-cli"
+                "linux-nvme/nvme-cli",
+                "cloudflare/cloudflared"
             ]
         },
         {
@@ -88,14 +89,19 @@
             "versioning": "regex:^(?<major>\\d{4})(?<minor>\\d{2})(?<patch>\\d{2})\\.?(?<build>\\d+)?$",
             "matchPackageNames": [
                 "google/gvisor",
-                "intel/Intel-Linux-Processor-Microcode-Data-Files",
-                "cloudflare/cloudflared"
+                "intel/Intel-Linux-Processor-Microcode-Data-Files"
             ]
         },
         {
             "versioning": "regex:^(?<major>\\d+)-(?<minor>\\d+)-?(?<patch>\\d+)?$",
             "matchPackageNames": [
                 "git://linux-nfs.org/~steved/libtirpc"
+            ]
+        },
+        {
+            "versioning": "regex:^(?<major>\\d+)\\.?(?<minor>\\d+)?\\.?(?<patch>\\d+)?$",
+            "matchPackageNames": [
+                "systemd/systemd"
             ]
         }
     ],

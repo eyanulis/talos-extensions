@@ -1,6 +1,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED, PLEASE DO NOT EDIT.
 #
-# Generated on 2025-08-07T15:53:10Z by kres 7f1d58a.
+# Generated on 2025-11-28T13:46:31Z by kres e1d6dac.
 
 # common variables
 
@@ -25,7 +25,7 @@ SOURCE_DATE_EPOCH := $(shell git log $(INITIAL_COMMIT_SHA) --pretty=%ct)
 
 # sync bldr image with pkgfile
 
-BLDR_RELEASE := v0.5.1
+BLDR_RELEASE := v0.5.5
 BLDR_IMAGE := ghcr.io/siderolabs/bldr:$(BLDR_RELEASE)
 BLDR := docker run --rm --user $(shell id -u):$(shell id -g) --volume $(PWD):/src --entrypoint=/bldr $(BLDR_IMAGE) --root=/src
 
@@ -36,24 +36,26 @@ PLATFORM ?= linux/amd64,linux/arm64
 PROGRESS ?= auto
 PUSH ?= false
 CI_ARGS ?=
+BUILD_ARGS = --build-arg=SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH)
+BUILD_ARGS += --build-arg=TAG="$(TAG)"
+BUILD_ARGS += --build-arg=PKGS="$(PKGS)"
+BUILD_ARGS += --build-arg=PKGS_PREFIX="$(PKGS_PREFIX)"
+BUILD_ARGS += --build-arg=TOOLS="$(TOOLS)"
+BUILD_ARGS += --build-arg=TOOLS_PREFIX="$(TOOLS_PREFIX)"
 COMMON_ARGS = --file=Pkgfile
 COMMON_ARGS += --provenance=false
 COMMON_ARGS += --progress=$(PROGRESS)
 COMMON_ARGS += --platform=$(PLATFORM)
-COMMON_ARGS += --build-arg=SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH)
-COMMON_ARGS += --build-arg=TAG="$(TAG)"
-COMMON_ARGS += --build-arg=PKGS="$(PKGS)"
-COMMON_ARGS += --build-arg=PKGS_PREFIX="$(PKGS_PREFIX)"
-COMMON_ARGS += --build-arg=TOOLS="$(TOOLS)"
-COMMON_ARGS += --build-arg=TOOLS_PREFIX="$(TOOLS_PREFIX)"
+COMMON_ARGS += $(BUILD_ARGS)
 
 # extra variables
 
 EXTENSIONS_IMAGE_REF ?= $(REGISTRY_AND_USERNAME)/extensions:$(TAG)
-PKGS ?= v1.12.0-alpha.0-4-gd5f7467
+PKGS ?= v1.13.0-alpha.0
 PKGS_PREFIX ?= ghcr.io/siderolabs
-TOOLS ?= v1.12.0-alpha.0
+TOOLS ?= v1.13.0-alpha.0
 TOOLS_PREFIX ?= ghcr.io/siderolabs
+IMAGE_SIGNER_RELEASE ?= v0.1.1
 
 # targets defines all the available targets
 
@@ -89,8 +91,11 @@ TARGETS += lldpd
 TARGETS += mdadm
 TARGETS += mei
 TARGETS += metal-agent
+TARGETS += multipath-tools
 TARGETS += nebula
+TARGETS += netbird
 TARGETS += newt
+TARGETS += nfs-utils
 TARGETS += nfsd
 TARGETS += nfsrahead
 TARGETS += nut-client
@@ -98,9 +103,11 @@ TARGETS += nvidia-container-toolkit-lts
 TARGETS += nvidia-container-toolkit-production
 TARGETS += nvidia-fabricmanager-lts
 TARGETS += nvidia-fabricmanager-production
+TARGETS += nvidia-gdrdrv-device
 TARGETS += nvidia-open-gpu-kernel-modules-lts
 TARGETS += nvidia-open-gpu-kernel-modules-production
 TARGETS += nvme-cli
+TARGETS += soci-snapshotter
 TARGETS += panfrost
 TARGETS += qemu-guest-agent
 TARGETS += qlogic-firmware
@@ -111,14 +118,17 @@ TARGETS += stargz-snapshotter
 TARGETS += tailscale
 TARGETS += tenstorrent
 TARGETS += thunderbolt
+TARGETS += trident-iscsi-tools
 TARGETS += uinput
 TARGETS += usb-modem-drivers
+TARGETS += usb-audio-drivers
 TARGETS += util-linux-tools
 TARGETS += v4l-uvc-drivers
 TARGETS += vc4
 TARGETS += vmtoolsd-guest-agent
 TARGETS += wasmedge
 TARGETS += xdma-driver
+TARGETS += xe
 TARGETS += xen-guest-agent
 TARGETS += youki
 TARGETS += zerotier
@@ -205,23 +215,37 @@ reproducibility-test-local-%:  ## Builds the specified target defined in the Pkg
 	@diffoscope $(ARTIFACTS)/build-a $(ARTIFACTS)/build-b
 	@rm -rf $(ARTIFACTS)/build-a $(ARTIFACTS)/build-b
 
+$(ARTIFACTS)/bldr: $(ARTIFACTS)  ## Downloads bldr binary.
+	@curl -sSL https://github.com/siderolabs/bldr/releases/download/$(BLDR_RELEASE)/bldr-$(OPERATING_SYSTEM)-$(GOARCH) -o $(ARTIFACTS)/bldr
+	@chmod +x $(ARTIFACTS)/bldr
+
+.PHONY: update-checksums
+update-checksums: $(ARTIFACTS)/bldr  ## Updates the checksums in the Pkgfile/vars.yaml based on the changed version variables.
+	@git diff -U0 | $(ARTIFACTS)/bldr update
+
 nonfree: $(NONFREE_TARGETS)  ## Builds all nonfree targets defined.
 
 .PHONY: $(TARGETS) $(NONFREE_TARGETS)
 $(TARGETS) $(NONFREE_TARGETS): $(ARTIFACTS)/bldr
 	@$(MAKE) docker-$@ TARGET_ARGS="--tag=$(REGISTRY)/$(USERNAME)/$@:$(shell $(ARTIFACTS)/bldr eval --target $@ --build-arg TAG=$(TAG) '{{.VERSION}}' 2>/dev/null) --push=$(PUSH)"
 
-$(ARTIFACTS)/bldr: $(ARTIFACTS)  ## Downloads bldr binary.
-	@curl -sSL https://github.com/siderolabs/bldr/releases/download/$(BLDR_RELEASE)/bldr-$(OPERATING_SYSTEM)-$(GOARCH) -o $(ARTIFACTS)/bldr
-	@chmod +x $(ARTIFACTS)/bldr
-
-.PHONY: deps.png
-deps.png:  ## Generates a dependency graph of the Pkgfile.
-	@$(BLDR) graph | dot -Tpng -o deps.png
+.PHONY: deps.svg
+deps.svg:  ## Generates a dependency graph of the Pkgfile.
+	@rm -f deps.png
+	@$(BLDR) graph $(BUILD_ARGS) | dot -Tsvg -o deps.svg
 
 .PHONY: extensions
 extensions: internal/extensions/descriptions.yaml
 	@$(MAKE) docker-$@ TARGET_ARGS="--tag=$(EXTENSIONS_IMAGE_REF) --push=$(PUSH)"
+
+.PHONY: extensions-catalog
+extensions-catalog: $(ARTIFACTS)/bldr
+	@$(ARTIFACTS)/bldr dump --build-arg TAG=VERSION --template hack/catalog.template > $(ARTIFACTS)/catalog.md 2>/dev/null
+	@lead='^<!-- ### BEGIN GENERATED CONTENT -->$$'; tail='^<!-- ### END GENERATED CONTENT -->$$'; sed -i -e "/$$lead/,/$$tail/{ /$$lead/{p; r $(ARTIFACTS)/catalog.md" -e "}; /$$tail/p; d }" README.md
+
+.PHONY: check-dirty
+check-dirty:
+	@if test -n "`git status --porcelain`"; then echo "Source tree is dirty"; git status; git diff; exit 1 ; fi
 
 .PHONY: extensions-metadata
 extensions-metadata: $(ARTIFACTS)/bldr
@@ -242,17 +266,18 @@ internal/extensions/descriptions.yaml: internal/extensions/image-digests
 	  crane export $$image - | tar x -O --occurrence=1 manifest.yaml | yq -r ". += {\"$$image\": {\"author\": .metadata.author, \"description\": .metadata.description}} | del(.metadata, .version)" - >> internal/extensions/descriptions.yaml; \
 	done
 
+.PHONY: $(ARTIFACTS)/image-signer
+$(ARTIFACTS)/image-signer:
+	@curl -sSL https://github.com/siderolabs/go-tools/releases/download/$(IMAGE_SIGNER_RELEASE)/image-signer-$(OPERATING_SYSTEM)-$(GOARCH) -o $(ARTIFACTS)/image-signer
+	@chmod +x $(ARTIFACTS)/image-signer
+
 .PHONY: sign-images
-sign-images:
-	@for image in $(shell crane export $(EXTENSIONS_IMAGE_REF) | tar x --to-stdout image-digests) $(EXTENSIONS_IMAGE_REF)@$$(crane digest $(EXTENSIONS_IMAGE_REF)); do \
-	  echo '==>' $$image; \
-	  cosign verify $$image --certificate-identity-regexp '@siderolabs\.com$$' --certificate-oidc-issuer https://accounts.google.com || \
-	    cosign sign --yes $$image; \
-	done
+sign-images: $(ARTIFACTS)/image-signer
+	@$(ARTIFACTS)/image-signer sign --timeout=15m $(shell crane export $(EXTENSIONS_IMAGE_REF) | tar x --to-stdout image-digests) $(EXTENSIONS_IMAGE_REF)@$$(crane digest $(EXTENSIONS_IMAGE_REF))
 
 .PHONY: grype-scan
 grype-scan:
-	@$(MAKE) local-$@ DEST=$(ARTIFACTS)/grype-scan
+	@$(MAKE) local-$@ DEST=$(ARTIFACTS)/grype-scan PLATFORM=linux/amd64
 
 .PHONY: rekres
 rekres:

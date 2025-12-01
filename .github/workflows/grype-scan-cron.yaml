@@ -1,6 +1,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED, PLEASE DO NOT EDIT.
 #
-# Generated on 2025-07-29T05:27:43Z by kres 1f18c2e-dirty.
+# Generated on 2025-10-02T16:11:40Z by kres bc281a9.
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
@@ -12,12 +12,11 @@ name: grype-scan-cron
 jobs:
   default:
     runs-on:
-      - self-hosted
-      - pkgs
+      group: pkgs
     steps:
       - name: gather-system-info
         id: system-info
-        uses: kenchan0130/actions-system-info@v1.3.1
+        uses: kenchan0130/actions-system-info@v1.4.0
         continue-on-error: true
       - name: print-system-info
         run: |
@@ -41,7 +40,7 @@ jobs:
           done
         continue-on-error: true
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Unshallow
         run: |
           git fetch --prune --unshallow
@@ -60,9 +59,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: results-grype-scan
-          path: |-
-            _out/grype-scan/linux_amd64/combined.spdx.json
-            _out/grype-scan/linux_amd64/grype-scan.log
-            _out/grype-scan/linux_arm64/combined.spdx.json
-            _out/grype-scan/linux_arm64/grype-scan.log
+          path: _out/grype-scan/**
           retention-days: "180"
